@@ -1,110 +1,224 @@
 #pragma once
 
-#include <iostream>
-
-#include <vector>
-
-#include <numeric> 
-
-#include "Complex.hpp"
-
-#include <type_traits>
 
 
+#include <cassert>
+
+#include <cstring>
 
 template< typename Type >
-struct is_complex
+struct is_numeric
 {
-    static constexpr bool value = false;
+    static constexpr bool value = is_real< Type >::value or is_complex< Type >::value;
 };
 
-
-template< typename Numeric >
-struct is_complex< Complex< Numeric > >
-{
-    static constexpr bool value = true;
-};
-
-template< typename Type >
-struct is_number
-{
-    static constexpr bool value = is_numeric< Type >::value or is_complex< Type >::value;
-};
-
-using namespace std;
-
-
-
-template < typename T, typename = std::enable_if_t < is_number < T >::value >>
+template< typename Numeric, typename = std::enable_if_t< is_numeric< Numeric >::value > >
 class Matrix
 {
+    private:
 
-private:
-    	T** elements; 
-        int cols;
         int rows;
 
-public:
-        Matrix(int rowcount = 0, int colcount = 0) : rows(rowcount), cols(colcount)
+        int columns;
+
+
+        Numeric * elements;
+
+
+    public:
+
+        int getRows() const
         {
-            T** elements = new T* [rows];
+            return rows;
+        }
 
-            for(int i = 0; i < rows; ++i)
+
+        int getColumns() const
+        {
+            return columns;
+        }
+
+
+        const Numeric * operator[]( int i ) const
+        {
+            return & elements[ i * columns ];
+
+        }
+
+
+        Numeric * operator[]( int i )
+        {
+            return & elements[ i * columns ];
+
+        }
+
+
+        friend std::ostream & operator<<( std::ostream & os, const Matrix & matrix )
+        {
+            for( int i = 0; i < matrix.rows; i++ )
             {
-                elements[i] =  new T [cols];
-
-                for (int j = 0; j < cols; ++j)
+                for( int j = 0; j < matrix.columns; j++ )
                 {
-                    elements[i][j] =  0;
+                    os << matrix[ i ][ j ] << '\t';
                 }
+
+                os << std::endl;
             }
-        }
-
-        Matrix( const Matrix & other ) : rows( other.rows ), cols( other.cols )
-        {
-            T** elements = new T* [rows];
-
-            for(int i = 0; i < rows; ++i)
-            {
-                elements[i] =  new T [cols];
-
-                for (int j = 0; j < cols; ++j)
-                {
-                    elements[i][j] =  other.elements[i][j];
-                }
-            }  
-        }
-
-        Matrix( const Matrix && other ) : rows( std::move(other.rows) ), cols( std::move( other.cols ) ), elements( std::move ( other.elements))
-        {
-           
-        }
-
-        ~Matrix()
-        {
-           for (int i = 0; i < rows ; ++i )
-           {
-                delete [] elements[i];
-           }
-
-           delete [] elements;
-        }
-
-        friend std::ostream & operator << ( std::ostream & os, const Matrix & m )
-        {
-            os<<"|  ";
-            for(int i = 0; i < m.rows; ++i)
-            {
-                for(int j = 0; j < m.cols; ++j)
-                {
-                    os << m.elements[i][j] <<"  ";
-                }
-                os<<"|";
-                os<<endl<<"|  ";
-            }
-            os<<"\b\b\b\b ";
 
             return os;
         }
 
+
+        template< typename OtherNumeric >
+        auto operator+( Matrix< OtherNumeric > & other )
+        {
+            assert( rows == other.getRows() and columns == other.getColumns() );
+
+
+            using ReturnType = decltype( Numeric() + OtherNumeric() );
+
+            Matrix< ReturnType > result( rows, columns );
+
+
+            Matrix & me = * this;
+
+            for( int i = 0; i < rows; i++ )
+            {
+                for( int j = 0; j < columns; j++ )
+                {
+                    result[ i ][ j ] = me[ i ][ j ] + other[ i ][ j ];
+                }
+            }
+
+
+            return std::move( result );
+        }
+
+
+        template< typename OtherNumeric >
+        auto operator-( Matrix< OtherNumeric > & other )
+        {
+            assert( rows == other.getRows() and columns == other.getColumns() );
+
+
+            using ReturnType = decltype( Numeric() - OtherNumeric() );
+
+            Matrix< ReturnType > result( rows, columns );
+
+
+            Matrix & me = * this;
+
+            for( int i = 0; i < rows; i++ )
+            {
+                for( int j = 0; j < columns; j++ )
+                {
+                    result[ i ][ j ] = me[ i ][ j ] - other[ i ][ j ];
+                }
+            }
+
+
+            return std::move( result );
+        }
+
+
+        template< typename OtherNumeric >
+        auto operator*( Matrix< OtherNumeric > & other )
+        {
+            assert( columns == other.getRows() );
+
+
+            using ReturnType = decltype( Numeric() * OtherNumeric() + Numeric() * OtherNumeric() );
+
+            Matrix< ReturnType > result( rows, other.getColumns() );
+
+
+            Matrix & me = * this;
+
+            for( int i = 0; i < rows; i++ )
+            {
+                for( int j = 0; j < other.getColumns(); j++ )
+                {
+                    auto & cell = result[ i ][ j ];
+
+                    cell = {};
+
+                    for( int k = 0; k < columns; k++ )
+                    {
+                        cell = cell + me[ i ][ k ] * other[ k ][ j ];
+                    }
+                }
+            }
+
+
+            return std::move( result );
+        }
+
+
+        Matrix() : rows( 0 ), columns( 0 )
+        {
+            elements = nullptr;
+        }
+
+
+
+        Matrix( int rows, int columns, Numeric * numeric ) : rows( rows ), columns( columns ), elements( numeric )
+        {
+        }
+
+
+        Matrix( int rows, int columns ) : Matrix( rows, columns, new Numeric[ rows * columns ] )
+        {
+        }
+
+
+        Matrix( int rows, int columns, Numeric ** numeric ) : Matrix( rows, columns )
+        {
+            for( int i = 0; i < rows; i++ )
+            {
+                for( int j = 0; j < columns; j++ )
+                {
+                    elements[ i ][ j ] = numeric[ i ][ j ];
+                }
+            }
+        }
+
+
+        template< int COLUMNS >
+        Matrix( int rows, Numeric ( * numericArray )[ COLUMNS ] ) : Matrix( rows, COLUMNS, & numericArray[ 0 ][ 0 ] )
+        {
+        }
+
+
+        template< int LENGTH >
+        Matrix( int rows, Numeric ( & numericArray )[ LENGTH ] ) : Matrix( rows, LENGTH / rows )
+        {
+            assert( LENGTH % rows == 0 );
+
+            memcpy( elements, & numericArray, sizeof( numericArray ) );
+        }
+
+
+        template< int ROWS, int COLUMNS >
+        Matrix( Numeric ( & numericArray )[ ROWS ][ COLUMNS ] ) : Matrix( ROWS, COLUMNS )
+        {
+            memcpy( elements, & numericArray, sizeof( numericArray ) );
+        }
+
+
+        Matrix( Matrix && other ) : Matrix( other.rows, other.columns, other.elements )
+        {
+            new( & other ) Matrix();
+        }
+
+
+        Matrix( Matrix & other ) : Matrix( other.rows, other.columns )
+        {
+            memcpy( elements, other.elements, rows * columns * sizeof( Numeric ) );
+        }
+
+
+        ~Matrix()
+        {
+            delete [] elements;
+        }
 };

@@ -1,14 +1,10 @@
 #pragma once
 
+
+
 #include <iostream>
 
-#include <numeric> 
-
 #include <type_traits>
-
-
-
-using namespace std;
 
 
 
@@ -22,9 +18,24 @@ class Fraction
         Integer denominator;
 
 
+
+        static Integer gcdUnsigned( Integer m, Integer n )
+        {
+            auto r = m % n;
+
+            return r ? gcdUnsigned( n, r ) : n;
+        }
+
+
+        static Integer gcd( Integer m, Integer n )
+        {
+            return m < 0 ? gcdUnsigned( - m, n ) : gcdUnsigned( m, n );
+        }
+
+
         void reduce()
         {
-            auto g = std::gcd( numerator, denominator );
+            auto g = gcd( numerator, denominator );
 
             numerator /= g;
 
@@ -47,24 +58,19 @@ class Fraction
         }
 
 
-
-        Fraction( const Fraction & other ) : numerator( other.numerator ), denominator( other.denominator )
+        template< typename OtherInteger >
+        Fraction( const Fraction< OtherInteger > & other ) : numerator( other.getNumerator() ), denominator( other.getDenominator() )
         {
         }
 
 
-        Fraction( Integer numerator = 0, Integer denominator = 1 ) : numerator( numerator ), denominator( denominator )
+
+        Fraction( Integer numerator = 0, Integer denominator = 1 ) :
+            numerator( denominator < 0 ? - numerator : numerator ), denominator( denominator < 0 ? - denominator : denominator )
         {
             if( denominator == 0 )
             {
-                throw runtime_error( std::string( "Divide by zero" ) );
-            }
-
-            if( denominator < 0 )
-            {
-                numerator = - numerator;
-
-                denominator = - denominator;
+                throw std::runtime_error( std::string( "Divide by zero" ) );
             }
 
             reduce();
@@ -72,14 +78,16 @@ class Fraction
 
 
 
-        friend std::ostream & operator<<( std::ostream & os, const Fraction & f )
+        friend std::ostream & operator<<( std::ostream & output, const Fraction & fraction )
         {
-            if ( f.getNumerator() == 0)
-                os << 0;
-            else
-                os << f.numerator << "/" << f.denominator;
+            output << fraction.numerator;
 
-            return os;
+            if( fraction.numerator )
+            {
+                output << "/" << fraction.denominator;
+            }
+
+            return output;
         }
 
 
@@ -91,6 +99,90 @@ class Fraction
 
 
 
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator==( const Fraction< OtherInteger > & other ) const
+        {
+            return numerator == other.getNumerator() and denominator == other.getDenominator();
+        }
+
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator==( const OtherInteger & integer ) const
+        {
+            return * this == Fraction< OtherInteger >( integer );
+        }
+
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator not_eq( const Fraction< OtherInteger > & other ) const
+        {
+            return not ( * this == other );
+        }
+
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator not_eq( const OtherInteger & integer ) const
+        {
+            return not ( * this == integer );
+        }
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator >= ( const Fraction< OtherInteger > & other ) const
+        {
+            if( *this == other )
+
+                return true;
+            else
+                return (* this > other);
+        }
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator > ( const Fraction< OtherInteger > & other ) const
+        {
+            auto num1 = numerator;
+            auto num2 = other.getNumerator();
+            auto den1 =  denominator;
+            auto den2 =  other.getDenominator();
+
+            if(num1 == num2)
+            {
+                return den1 < den2;
+            }
+            else if(den1 == den2)
+            {
+                return num1 > num2;
+            }
+            else
+            {
+                return (num1 * den2) > (num2 * den1);
+            }
+
+        }
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator < ( const Fraction< OtherInteger > & other ) const
+        {
+            return not (* this > other);
+        }
+
+
+        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        auto operator <= ( const Fraction< OtherInteger > & other ) const
+        {
+            if( *this == other )
+
+                return true;
+            else
+                return not (* this > other);
+        }
+
+
         auto operator-() const
         {
             return Fraction( -numerator, denominator );
@@ -98,7 +190,7 @@ class Fraction
 
 
 
-        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        template< typename OtherInteger >
         auto operator+( const Fraction< OtherInteger > & other ) const
         {
             auto n = numerator * other.getDenominator() + denominator * other.getNumerator();
@@ -124,7 +216,7 @@ class Fraction
 
 
 
-        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        template< typename OtherInteger >
         auto operator-( const Fraction< OtherInteger > & other ) const
         {
             auto n = numerator * other.getDenominator() - denominator * other.getNumerator();
@@ -150,7 +242,7 @@ class Fraction
 
 
 
-        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        template< typename OtherInteger >
         auto operator*( const Fraction< OtherInteger > & other ) const
         {
             auto n = numerator * other.getNumerator();
@@ -176,7 +268,7 @@ class Fraction
 
 
 
-        template< typename OtherInteger, typename = std::enable_if_t< std::is_integral< OtherInteger >::value > >
+        template< typename OtherInteger >
         auto operator/( const Fraction< OtherInteger > & other ) const
         {
             auto n = numerator * other.getDenominator();
@@ -199,4 +291,19 @@ class Fraction
         {
             return Fraction< OtherInteger >( integer ) / fraction;
         }
+};
+
+
+
+template< typename Type >
+struct is_fraction
+{
+    static constexpr bool value = false;
+};
+
+
+template< typename Integer >
+struct is_fraction< Fraction< Integer > >
+{
+    static constexpr bool value = true;
 };
