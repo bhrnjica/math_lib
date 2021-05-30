@@ -27,6 +27,7 @@ void statsTest()
 
     std::cout << "varaiance of int = " << Stats::variance<int>(n) << std::endl;
 
+
     std::cout << "variance of fraction < int > = " << Stats::variance<Fraction < int > >(firstFArray) << std::endl;
 
     std::cout << "median of fraction < int > = " << Stats::median<Fraction < int > >(firstFArray) << std::endl;
