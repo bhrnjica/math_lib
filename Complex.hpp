@@ -203,7 +203,7 @@ class Complex
             }
             else
             {
-                return Complex( realNumerator / denominator, imaginaryNumerator / denominator );
+                return Complex< NumeratorType >( realNumerator / denominator, imaginaryNumerator / denominator );
             }
         }
 
