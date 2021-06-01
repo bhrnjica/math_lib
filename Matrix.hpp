@@ -6,13 +6,11 @@
 
 #include <cstring>
 
-template< typename Type >
-struct is_numeric
-{
-    static constexpr bool value = is_real< Type >::value or is_complex< Type >::value;
-};
+#include "Complex.hpp"
 
-template< typename Numeric, typename = std::enable_if_t< is_numeric< Numeric >::value > >
+
+
+template< Number Numeric >
 class Matrix
 {
     private:
@@ -53,7 +51,7 @@ class Matrix
         }
 
 
-        friend std::ostream & operator<<( std::ostream & os, const Matrix & matrix )
+        friend std::ostream & operator <<( std::ostream & os, const Matrix & matrix )
         {
             for( int i = 0; i < matrix.rows; i++ )
             {
@@ -70,7 +68,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator+( Matrix< OtherNumeric > & other )
+        auto operator +( Matrix< OtherNumeric > & other )
         {
             assert( rows == other.getRows() and columns == other.getColumns() );
 
@@ -96,7 +94,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator-( Matrix< OtherNumeric > & other )
+        auto operator -( Matrix< OtherNumeric > & other )
         {
             assert( rows == other.getRows() and columns == other.getColumns() );
 
@@ -122,7 +120,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator*( Matrix< OtherNumeric > & other )
+        auto operator *( Matrix< OtherNumeric > & other )
         {
             assert( columns == other.getRows() );
 

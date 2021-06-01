@@ -6,95 +6,28 @@
 
 
 
-template< typename Type >
-struct is_real
-{
-    static constexpr bool value = std::is_arithmetic< Type >::value or is_fraction< Type >::value;
-};
-
-
-
-template< typename ParameterType >
-struct DivisionType
-{
-    using Type = ParameterType;
-};
-
-
-template<>
-struct DivisionType< uint8_t >
-{
-    using Type = Fraction< uint8_t >;
-};
-
-template<>
-struct DivisionType< uint16_t >
-{
-    using Type = Fraction< uint16_t >;
-};
-
-template<>
-struct DivisionType< uint32_t >
-{
-    using Type = Fraction< uint32_t >;
-};
-
-template<>
-struct DivisionType< uint64_t >
-{
-    using Type = Fraction< uint64_t >;
-};
-
-template<>
-struct DivisionType< int8_t >
-{
-    using Type = Fraction< int8_t >;
-};
-
-template<>
-struct DivisionType< int16_t >
-{
-    using Type = Fraction< int16_t >;
-};
-
-template<>
-struct DivisionType< int32_t >
-{
-    using Type = Fraction< int32_t >;
-};
-
-template<>
-struct DivisionType< int64_t >
-{
-    using Type = Fraction< int64_t >;
-};
-
-
-
-
-template< typename Numeric, typename = std::enable_if_t< is_real< Numeric >::value > >
+template< RealNumber Real >
 class Complex
 {
     private:
 
-        Numeric real;
+        Real real;
 
-        Numeric imaginary;
+        Real imaginary;
 
 
     public:
 
-        const Numeric & getReal() const
+        const Real & getReal() const
         {
             return real;
         }
 
 
-        const Numeric & getImaginary() const
+        const Real & getImaginary() const
         {
             return imaginary;
         }
-
 
 
         Complex( const Complex & other ) : real( other.real ), imaginary( other.imaginary )
@@ -102,13 +35,12 @@ class Complex
         }
 
 
-        Complex( Numeric real = Numeric{}, Numeric imaginary = Numeric{} ) : real( real ), imaginary( imaginary )
+        Complex( Real real = Real{}, Real imaginary = Real{} ) : real( real ), imaginary( imaginary )
         {
         }
 
 
-
-        friend std::ostream & operator<<( std::ostream & os, const Complex & complex )
+        friend std::ostream & operator <<( std::ostream & os, const Complex & complex )
         {
             auto & real = complex.getReal();
 
@@ -170,15 +102,14 @@ class Complex
 
 
 
-        auto operator-() const
+        auto operator -() const
         {
             return Complex( -real, -imaginary );
         }
 
 
-
-        template< typename OtherNumeric >
-        auto operator+( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator +( const Complex< OtherReal > & other ) const
         {
             auto realResult = real + other.getReal();
 
@@ -188,22 +119,22 @@ class Complex
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        auto operator+( const OtherNumeric & numeric ) const
+        template< RealNumber OtherReal >
+        auto operator +( const OtherReal & numeric ) const
         {
-            return * this + Complex< OtherNumeric >( numeric );
+            return * this + Complex< OtherReal >( numeric );
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        friend auto operator+( const OtherNumeric & numeric, const Complex & complex )
+        template< RealNumber OtherReal >
+        friend auto operator +( const OtherReal & numeric, const Complex & complex )
         {
             return complex + numeric;
         }
 
 
-        template< typename OtherNumeric >
-        auto operator-( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator -( const Complex< OtherReal > & other ) const
         {
             auto realResult = real - other.getReal();
 
@@ -213,23 +144,22 @@ class Complex
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        auto operator-( const OtherNumeric & numeric ) const
+        template< RealNumber OtherReal >
+        auto operator -( const OtherReal & numeric ) const
         {
-            return * this - Complex< OtherNumeric >( numeric );
+            return * this - Complex< OtherReal >( numeric );
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        friend auto operator-( const OtherNumeric & numeric, const Complex & complex )
+        template< RealNumber OtherReal >
+        friend auto operator -( const OtherReal & numeric, const Complex & complex )
         {
-            return Complex< OtherNumeric >( numeric ) - complex;
+            return Complex< OtherReal >( numeric ) - complex;
         }
 
 
-
-        template< typename OtherNumeric >
-        auto operator*( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator *( const Complex< OtherReal > & other ) const
         {
             auto realResult = real * other.getReal() - imaginary * other.getImaginary();
 
@@ -239,23 +169,22 @@ class Complex
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        auto operator*( OtherNumeric const & numeric ) const
+        template< RealNumber OtherReal >
+        auto operator *( OtherReal const & numeric ) const
         {
-            return * this * Complex< OtherNumeric >( numeric );
+            return * this * Complex< OtherReal >( numeric );
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        friend auto operator*( OtherNumeric const & numeric, const Complex & complex )
+        template< RealNumber OtherReal >
+        friend auto operator *( OtherReal const & numeric, const Complex & complex )
         {
             return complex * numeric;
         }
 
 
-
-        template< typename OtherNumeric >
-        auto operator/( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator /( const Complex< OtherReal > & other ) const
         {
             auto realNumerator = real * other.getReal() + imaginary * other.getImaginary();
 
@@ -264,104 +193,101 @@ class Complex
             auto denominator = other.getReal() * other.getReal() + other.getImaginary() * other.getImaginary();
 
 
-            using Type = typename DivisionType< decltype( realNumerator ) >::Type;
+            using NumeratorType = decltype( realNumerator );
 
+            if constexpr( std::is_integral_v< NumeratorType > )
+            {
+                using ReturnType = Fraction< NumeratorType >;
 
-            auto realResult = ( Type ) realNumerator / ( Type ) denominator;
-
-            auto imaginaryResult = ( Type ) imaginaryNumerator / ( Type ) denominator;
-
-
-            return Complex< decltype( realResult ) >( realResult, imaginaryResult );
+                return Complex( ReturnType( realNumerator, denominator ), ReturnType( imaginaryNumerator, denominator ) );
+            }
+            else
+            {
+                return Complex( realNumerator / denominator, imaginaryNumerator / denominator );
+            }
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        auto operator/( OtherNumeric const & numeric ) const
+        template< RealNumber OtherReal >
+        auto operator /( OtherReal const & numeric ) const
         {
-            return * this / Complex< OtherNumeric >( numeric );
+            return * this / Complex< OtherReal >( numeric );
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< is_real< OtherNumeric >::value > >
-        friend auto operator/( OtherNumeric const & numeric, const Complex & complex )
+        template< RealNumber OtherReal >
+        friend auto operator /( OtherReal const & numeric, const Complex & complex )
         {
-            return Complex< OtherNumeric >( numeric ) / complex;
+            return Complex< OtherReal >( numeric ) / complex;
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator==( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator ==( const Complex< OtherReal > & other ) const
         {
             return real == other.getReal() and imaginary == other.getImaginary();
         }
 
 
-
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator==( const OtherNumeric & integer ) const
+        template< RealNumber OtherReal >
+        auto operator ==( const OtherReal & integer ) const
         {
-            return * this == Complex< OtherNumeric >( integer );
+            return * this == Complex< OtherReal >( integer );
         }
 
 
-
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator not_eq( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator not_eq( const Complex< OtherReal > & other ) const
         {
             return not ( * this == other );
         }
 
 
-
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator not_eq( const OtherNumeric & integer ) const
+        template< RealNumber OtherReal >
+        auto operator not_eq( const OtherReal & integer ) const
         {
             return not ( * this == integer );
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator >= ( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator >=( const Complex< OtherReal > & other ) const
         {
-            return (real >= other.getReal());
+            return real >= other.getReal();
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator > ( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator >( const Complex< OtherReal > & other ) const
         {
-           return (real > other.getReal());
-            
+           return real > other.getReal();
+
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator < ( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator <( const Complex< OtherReal > & other ) const
         {
-            return (real < other.getReal());
+            return real < other.getReal();
         }
 
 
-        template< typename OtherNumeric, typename = std::enable_if_t< std::is_integral< OtherNumeric >::value > >
-        auto operator <= ( const Complex< OtherNumeric > & other ) const
+        template< RealNumber OtherReal >
+        auto operator <=( const Complex< OtherReal > & other ) const
         {
-            return (real <= other.getReal());
+            return real <= other.getReal();
         }
-
 };
 
+
+
+template< typename T >
+concept ComplexNumber = requires( T x )
+{
+    { Complex{ x } } -> std::same_as< T >;
+};
 
 
 template< typename Type >
-struct is_complex
-{
-    static constexpr bool value = false;
-};
+concept Number = RealNumber< Type > or ComplexNumber< Type >;
 
-
-template< typename Type >
-struct is_complex< Complex< Type > >
-{
-    static constexpr bool value = true;
-};

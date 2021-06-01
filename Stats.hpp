@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cassert>
 
 #include <cstring>
@@ -8,102 +9,127 @@
 
 #include <algorithm>
 
+#include "Complex.hpp"
+
 #include "Vector.hpp"
+
+
 
 class Stats
 {
-public:
- 
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto mean (Numeric (&data) [COUNT] )
-    {
-        auto result = data[0];
-        for (int i = 1; i < COUNT; i++)
+    public:
+
+        template< Number Numeric, int COUNT >
+        static auto mean( Numeric( & data )[ COUNT ] )
         {
-            result = result + data[i];
-        }
-           
-        return result/COUNT;
-    }
+            auto result = data[ 0 ];
 
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto max (Numeric (&data) [COUNT] )
-    {
-        auto max = data[0];
+            for( int i = 1; i < COUNT; i++ )
+            {
+                result = result + data[ i ];
+            }
 
-        for (int i = 1; i < COUNT; i++)
-        {
-            if ( max < data[i])
-
-                max = data[i];
-        }
-           
-        return max;
-    }
-
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto min (Numeric (&data) [COUNT] )
-    {
-        auto min = data[0];
-
-        for (int i = 1; i < COUNT; i++)
-        {
-            if ( min > data[i])
-
-                min = data[i];
-        }
-           
-        return min;
-    }
-
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto variance (Numeric (&data) [COUNT] )
-    {
-        auto m = mean(data);
-
-        auto parSum = (data[0] - m);
-
-        for (int i = 1; i < COUNT; i++)
-        {
-            auto res = (data[i] - m);
-
-            parSum = parSum + res * res;
+            return result / COUNT;
         }
 
-        return parSum / (COUNT - 1);
-    }
 
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto std (Numeric (&data) [COUNT] )
-    {
-       auto var = variance(data);
-
-       return sqrt(var);
-    }
-
-    template < typename Numeric, int COUNT, typename = std::enable_if_t < is_numeric < Numeric >:: value>>
-    static auto median (Numeric (&data) [COUNT] )
-    {
-       auto temp = new Numeric[COUNT];
-       
-       memcpy( temp, data, COUNT * sizeof( Numeric ) );
-
-       auto index = COUNT / 2; 
-
-       std::sort(temp, temp + COUNT);
-
-       if(COUNT % 2 == 1)
-            return temp[ index ];
-        else
+        template< Number Numeric, int COUNT >
+        static auto max( Numeric( & data ) [ COUNT ] )
         {
-            auto v1 = temp[ index -1];
-            
-            auto v2 = temp[ index +1];
+            auto max = data[ 0 ];
 
-            delete [] temp;
+            for( int i = 1; i < COUNT; i++ )
+            {
+                if( max < data[ i ] )
+                {
+                    max = data[ i ];
+                }
+            }
 
-            return (v1 + v2) / 2;
-
+            return max;
         }
-    }
+
+
+        template< Number Numeric, int COUNT >
+        static auto min( Numeric( & data ) [ COUNT ] )
+        {
+            auto min = data[ 0 ];
+
+            for( int i = 1; i < COUNT; i++ )
+            {
+                if( min > data[ i ] )
+                {
+                    min = data[ i ];
+                }
+            }
+
+            return min;
+        }
+
+
+        template< Number Numeric, int COUNT >
+        static auto variance( Numeric( & data ) [ COUNT ] )
+        {
+            auto m = mean( data );
+
+            auto sum = data[ 0 ] - m;
+
+
+            for( int i = 1; i < COUNT; i++ )
+            {
+                auto res = data[ i ] - m;
+
+                sum = sum + res * res;
+            }
+
+
+            return sum / ( COUNT - 1 );
+        }
+
+
+        template< Number Numeric, int COUNT >
+        static auto std( Numeric( & data ) [ COUNT ] )
+        {
+            auto var = variance( data );
+
+            return sqrt( var );
+        }
+
+
+        template< Number Numeric, int COUNT >
+        static auto median( Numeric( & data ) [ COUNT ] )
+        {
+            auto temp = new Numeric[ COUNT ];
+
+            memcpy( temp, data, COUNT * sizeof( Numeric ) );
+
+
+            auto middle = COUNT / 2;
+
+
+            std::nth_element( temp, temp + middle, temp + COUNT );
+
+
+            if( COUNT % 2 )
+            {
+                return temp[ middle ];
+            }
+            else
+            {
+                auto v1 = temp[ middle ];
+
+
+                auto next = middle + 1;
+
+                std::nth_element( temp, temp + next, temp + COUNT );
+
+                auto v2 = temp[ next ];
+
+
+                delete [] temp;
+
+
+                return ( v1 + v2 ) / 2;
+            }
+        }
 };
