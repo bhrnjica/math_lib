@@ -68,7 +68,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator +( Matrix< OtherNumeric > & other )
+        auto operator +( Matrix< OtherNumeric > & other ) const
         {
             assert( rows == other.getRows() and columns == other.getColumns() );
 
@@ -78,7 +78,7 @@ class Matrix
             Matrix< ReturnType > result( rows, columns );
 
 
-            Matrix & me = * this;
+            const Matrix & me = * this;
 
             for( int i = 0; i < rows; i++ )
             {
@@ -94,7 +94,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator -( Matrix< OtherNumeric > & other )
+        auto operator -( Matrix< OtherNumeric > & other ) const
         {
             assert( rows == other.getRows() and columns == other.getColumns() );
 
@@ -104,7 +104,7 @@ class Matrix
             Matrix< ReturnType > result( rows, columns );
 
 
-            Matrix & me = * this;
+            const Matrix & me = * this;
 
             for( int i = 0; i < rows; i++ )
             {
@@ -120,7 +120,7 @@ class Matrix
 
 
         template< typename OtherNumeric >
-        auto operator *( Matrix< OtherNumeric > & other )
+        auto operator *( Matrix< OtherNumeric > & other ) const
         {
             assert( columns == other.getRows() );
 
@@ -130,7 +130,7 @@ class Matrix
             Matrix< ReturnType > result( rows, other.getColumns() );
 
 
-            Matrix & me = * this;
+            const Matrix & me = * this;
 
             for( int i = 0; i < rows; i++ )
             {
