@@ -94,7 +94,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto operator+( Vector< OtherNumeric > & other )
+        auto operator +( Vector< OtherNumeric > & other ) const
         {
             assert( count == other.length() );
 
@@ -115,7 +115,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto operator-( Vector< OtherNumeric > & other )
+        auto operator -( Vector< OtherNumeric > & other ) const
         {
             assert( count == other.length() );
 
@@ -136,14 +136,14 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto operator*( Vector< OtherNumeric > & other )
+        auto operator *( Vector< OtherNumeric > & other ) const
         {
             return inner( other );
         }
 
 
         template< Number OtherNumeric >
-        friend auto operator*( const OtherNumeric & scalar, const Vector & vector )
+        friend auto operator *( const OtherNumeric & scalar, const Vector & vector )
         {
             using ReturnType = decltype( Numeric() * OtherNumeric() );
 
@@ -161,7 +161,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto operator*( OtherNumeric & otherNumeric )
+        auto operator *( OtherNumeric & otherNumeric ) const
         {
             using ReturnType = decltype( Numeric() * OtherNumeric() );
 
@@ -180,7 +180,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto inner( const Vector< OtherNumeric > & other )
+        auto inner( const Vector< OtherNumeric > & other ) const
         {
             assert( count == other.length() );
 
@@ -201,7 +201,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto cross( Vector< OtherNumeric > & other )
+        auto cross( Vector< OtherNumeric > & other ) const
         {
             assert( count == other.length() );
 
@@ -226,7 +226,7 @@ class Vector
 
 
         template< Number OtherNumeric >
-        auto outer( Vector< OtherNumeric > & other )
+        auto outer( Vector< OtherNumeric > & other ) const
         {
             using ReturnType = decltype( Numeric() * OtherNumeric() );
 
