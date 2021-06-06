@@ -2,6 +2,8 @@
 
 #include "FractionTests.cpp"
 
+#include "ComplexTests.cpp"
+
 int main( int argc, char ** argv )
 {
     ::testing::InitGoogleTest( & argc, argv );

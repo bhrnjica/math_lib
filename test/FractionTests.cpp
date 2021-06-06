@@ -1,5 +1,6 @@
 
 #include <gtest/gtest.h>
+
 #include <Fraction.hpp>
 
 TEST( math_lib_test, CreateFractionTest )
