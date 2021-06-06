@@ -69,7 +69,7 @@ class Fraction
         {
             if( denominator == 0 )
             {
-                throw std::runtime_error( std::string( "Divide by zero" ) );
+                throw std::runtime_error( std::string( "Divide by zero!" ) );
             }
 
             reduce();
