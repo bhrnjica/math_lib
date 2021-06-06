@@ -4,6 +4,12 @@
 
 #include "ComplexTests.cpp"
 
+#include "MatrixTests.cpp"
+
+#include "VectorTests.cpp"
+
+#include "StatsTests.cpp"
+
 int main( int argc, char ** argv )
 {
     ::testing::InitGoogleTest( & argc, argv );
