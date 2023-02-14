@@ -290,4 +290,3 @@ concept ComplexNumber = requires( T x )
 
 template< typename Type >
 concept Number = RealNumber< Type > or ComplexNumber< Type >;
-

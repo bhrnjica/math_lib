@@ -7,6 +7,7 @@ TEST( math_lib_test, CreateFractionTest )
 {
     int m = 2;
     int n = 3;
+    
 
     long a = 4;
     long b = 5;

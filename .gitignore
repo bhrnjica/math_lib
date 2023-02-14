@@ -31,3 +31,5 @@
 *.out
 *.app
 build/
+.kdev4/*
+math_lib.kdev4

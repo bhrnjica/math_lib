@@ -59,13 +59,15 @@ class Fraction
 
 
         template< std::integral OtherInteger >
-        Fraction( const Fraction< OtherInteger > & other ) : numerator( other.getNumerator() ), denominator( other.getDenominator() )
+        Fraction( const Fraction< OtherInteger > & other )
+         : numerator( other.getNumerator() ), denominator( other.getDenominator() )
         {
         }
 
 
-        Fraction( Integer numerator = 0, Integer denominator = 1 ) :
-            numerator( denominator < 0 ? - numerator : numerator ), denominator( denominator < 0 ? - denominator : denominator )
+        Fraction( Integer numerator = 0, Integer denominator = 1 ) 
+            :numerator( denominator < 0 ? - numerator : numerator ), 
+            denominator( denominator < 0 ? - denominator : denominator )
         {
             if( denominator == 0 )
             {

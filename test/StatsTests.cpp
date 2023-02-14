@@ -9,6 +9,4 @@ TEST( math_lib_test, StatsTest )
 {
 
     ASSERT_EQ(1,1);
-
-
 }

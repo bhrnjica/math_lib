@@ -215,7 +215,6 @@ class Matrix
             memcpy( elements, other.elements, rows * columns * sizeof( Numeric ) );
         }
 
-
         ~Matrix()
         {
             delete [] elements;

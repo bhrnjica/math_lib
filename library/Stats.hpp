@@ -10,7 +10,6 @@
 #include "Vector.hpp"
 
 
-
 class Stats
 {
     public:
