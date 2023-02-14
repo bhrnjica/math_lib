@@ -40,7 +40,6 @@ int main( int argc, char *argv[] )
 {
     statsTest();
 
-    return 0;
 
     int m = 1, n = 2;
 
