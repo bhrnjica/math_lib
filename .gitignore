@@ -33,3 +33,6 @@
 build/
 .kdev4/*
 math_lib.kdev4
+/.vs
+/.vscode
+/CMakeSettings.json

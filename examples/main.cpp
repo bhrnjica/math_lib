@@ -351,7 +351,7 @@ int main( int argc, char *argv[] )
     double thirdDArray[ 4 ] = { 0.5, 1.2 , 1.5, 0.1 };
 
 
-
+    
 
     Vector< Fraction< int > > vector_first( firstFArray );
 
@@ -364,7 +364,7 @@ int main( int argc, char *argv[] )
 
     auto vst = vector_second * vector_third;
 
-    auto vfst = vector_first *  vector_second * vector_third;
+    //auto vfst = vector_first *  vector_second * vector_third;
 
 
     std::cout << "v_first = \n" << vector_first << std::endl << std::endl;
@@ -378,7 +378,7 @@ int main( int argc, char *argv[] )
 
     std::cout << "v_second * v_third = \n" << vst << std::endl << std::endl;
 
-    std::cout << "v_first * v_second * v_third = \n" << vfst << std::endl << std::endl;
+    //std::cout << "v_first * v_second * v_third = \n" << vfst << std::endl << std::endl;
 
 
     return 0;
